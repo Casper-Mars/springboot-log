@@ -46,12 +46,4 @@ public @interface SysLog {
      */
     String keyName() default "id";
 
-    /**
-     * 占位符
-     *
-     * @return
-     */
-    String[] placeHolder() default {};
-
-
 }

@@ -1,5 +1,7 @@
 package org.r.base.log.thread;
 
+import com.alibaba.fastjson.JSONObject;
+import org.r.base.log.annotation.SysLog;
 import org.r.base.log.wrapper.TaskWrapper;
 import org.springframework.stereotype.Component;
 
@@ -13,10 +15,7 @@ public class DefaultTaskDelegate implements TaskDelegate {
     @Override
     public void run(TaskWrapper task) {
 
-//        Map<String, Object> info = ((DefaultTaskWrapper)task).getInfo();
-//        String s = JSONObject.toJSONString(info);
-//        System.out.println(s);
-
-
+        String s = JSONObject.toJSONString(task);
+        System.out.println(s);
     }
 }
