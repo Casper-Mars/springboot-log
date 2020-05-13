@@ -70,12 +70,12 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
         int attrIndex = -1;
         if (index == -1) {
             attrIndex = Integer.parseInt(attrName);
-            return value[attrIndex-1].toString();
+            return value[attrIndex - 1].toString();
         } else {
             attrIndex = Integer.parseInt(attrName.substring(0, index));
         }
         attrName = attrName.substring(index + 1);
-        return getValue(attrName, value[attrIndex-1]);
+        return getValue(attrName, value[attrIndex - 1]);
     }
 
     private String getValue(String attrChain, Object value) {
@@ -83,16 +83,37 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
         String attrName;
         if (index == -1) {
             attrName = attrChain;
-            return ReflectUtil.getInstance().getAttrValue(value, attrName).toString();
+            Object o = buildValue(value, attrName);
+            if (o == null) {
+                return ReflectUtil.getInstance().getAttrValue(value, attrName).toString();
+            } else {
+                return o.toString();
+            }
         } else {
             attrName = attrChain.substring(0, index);
             attrChain = attrChain.substring(index + 1);
-            return getValue(attrChain, ReflectUtil.getInstance().getAttrValue(value, attrName));
+            Object o = buildValue(value, attrName);
+            if (o == null) {
+                o = ReflectUtil.getInstance().getAttrValue(value, attrName);
+            }
+            return getValue(attrChain, o);
         }
     }
 
 
-    public static String[] getAllPlaceHolder(String msg) {
+    /**
+     * 子类钩子方法，继承的子类可以自定义获取值的方式
+     *
+     * @param target   操作的对象
+     * @param attrName 属性名称
+     * @return
+     */
+    protected Object buildValue(Object target, String attrName) {
+        return null;
+    }
+
+
+    private String[] getAllPlaceHolder(String msg) {
         String reg = "(#\\{[\\w|\\d|\\.]*\\})";
         Pattern pattern = Pattern.compile(reg);
         List<String> result = new LinkedList<>();
@@ -103,12 +124,6 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
         }
         return result.toArray(new String[]{});
     }
-
-//    public static void main(String[] args) {
-//        String msg = "编辑了#{1.id}和#{1.dto.id}和#{1}";
-//        String[] allPlaceHolder = getAllPlaceHolder(msg);
-//
-//    }
 
 
 }
