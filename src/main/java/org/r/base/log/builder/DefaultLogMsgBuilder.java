@@ -1,5 +1,6 @@
 package org.r.base.log.builder;
 
+import com.alibaba.fastjson.JSONObject;
 import org.r.base.log.annotation.SysLog;
 import org.r.base.log.util.ReflectUtil;
 import org.r.base.log.wrapper.TaskWrapper;
@@ -68,35 +69,28 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
         String attrName = holder.substring(2, holder.length() - 1);
         int index = attrName.indexOf(".");
         int attrIndex = -1;
+        Object result;
         if (index == -1) {
             attrIndex = Integer.parseInt(attrName);
-            return value[attrIndex - 1].toString();
+            result = value[attrIndex - 1];
         } else {
             attrIndex = Integer.parseInt(attrName.substring(0, index));
+            attrName = attrName.substring(index + 1);
+            result = getValue(attrName, value[attrIndex - 1]);
         }
-        attrName = attrName.substring(index + 1);
-        return getValue(attrName, value[attrIndex - 1]);
+        return parseToString(result);
     }
 
-    private String getValue(String attrChain, Object value) {
+    private Object getValue(String attrChain, Object value) {
         int index = attrChain.indexOf(".");
         String attrName;
         if (index == -1) {
             attrName = attrChain;
-            Object o = buildValue(value, attrName);
-            if (o == null) {
-                return ReflectUtil.getInstance().getAttrValue(value, attrName).toString();
-            } else {
-                return o.toString();
-            }
+            return buildValue(value, attrName);
         } else {
             attrName = attrChain.substring(0, index);
             attrChain = attrChain.substring(index + 1);
-            Object o = buildValue(value, attrName);
-            if (o == null) {
-                o = ReflectUtil.getInstance().getAttrValue(value, attrName);
-            }
-            return getValue(attrChain, o);
+            return getValue(attrChain, buildValue(value, attrName));
         }
     }
 
@@ -109,7 +103,15 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
      * @return
      */
     protected Object buildValue(Object target, String attrName) {
-        return null;
+        return ReflectUtil.getInstance().getAttrValue(target, attrName);
+    }
+
+
+    private String parseToString(Object object) {
+        if (object instanceof Collection) {
+            return JSONObject.toJSONString(object);
+        }
+        return object.toString();
     }
 
 
