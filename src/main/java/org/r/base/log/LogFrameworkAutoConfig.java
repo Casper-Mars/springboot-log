@@ -46,6 +46,12 @@ public class LogFrameworkAutoConfig implements ApplicationContextAware {
 
     @Bean
     public LogAop logAop(TaskDelegate delegate, MetaDataProvider metaDataProvider, LogMsgBuilder logMsgBuilder) {
+        System.out.println(".__                 \n" +
+                "|  |   ____   ____  \n" +
+                "|  |  /  _ \\ / ___\\ \n" +
+                "|  |_(  <_> ) /_/  >\n" +
+                "|____/\\____/\\___  / \n" +
+                "           /_____/  ");
         return new LogAop(new LogTaskPool(), delegate, metaDataProvider, logMsgBuilder);
     }
 
