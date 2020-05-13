@@ -40,10 +40,22 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
         Object[] paramters = task.getParamters();
         Map<String, String> valueIndex = valueArray(paramters, placeHolders);
         for (String placeHolder : placeHolders) {
-            msg = msg.replace(placeHolder, valueIndex.get(placeHolder));
+            msg = msg.replace(placeHolder, decodeValue(task,placeHolder,valueIndex.get(placeHolder)));
         }
         return msg;
     }
+
+    /**
+     * 进一步解析数据
+     *
+     * @param task  上下文
+     * @param value 数据
+     * @return
+     */
+    protected String decodeValue(TaskWrapper task,String placeHolder, String value) {
+        return value;
+    }
+
 
     private Map<String, String> valueArray(Object[] parameters, String[] placeHolders) {
 
@@ -107,6 +119,12 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
     }
 
 
+    /**
+     * 把对象转化成String
+     *
+     * @param object 目标对象
+     * @return
+     */
     private String parseToString(Object object) {
         if (object instanceof Collection) {
             return JSONObject.toJSONString(object);
@@ -115,6 +133,12 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
     }
 
 
+    /**
+     * 根据正则切割出所有的占位符
+     *
+     * @param msg 目标字符串
+     * @return
+     */
     private String[] getAllPlaceHolder(String msg) {
         String reg = "(#\\{[\\w|\\d|\\.]*\\})";
         Pattern pattern = Pattern.compile(reg);

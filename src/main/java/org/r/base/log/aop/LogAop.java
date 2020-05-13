@@ -41,7 +41,7 @@ public class LogAop {
     }
 
     @Around(value = "pointCut(log)", argNames = "point,log")
-    public Object arount(ProceedingJoinPoint point, SysLog log) {
+    public Object arount(ProceedingJoinPoint point, SysLog log) throws Throwable {
 
         /*获取拦截的类和对应的方法,和参数*/
         Class<?> targetClass = point.getTarget().getClass();
@@ -67,7 +67,7 @@ public class LogAop {
         try {
             proceed = point.proceed();
         } catch (Throwable throwable) {
-            throwable.printStackTrace();
+            throw throwable;
         }
         if (needInvoke) {
             afterInvoke = invoke(log, key);
