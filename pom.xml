@@ -46,4 +46,20 @@
 
     </build>
 
+    <distributionManagement>
+
+        <repository>
+            <id>nexus</id>
+            <url>http://192.168.123.60:18081/repository/zhisheng/</url>
+        </repository>
+
+
+    </distributionManagement>
+
+
+
+
+
+
+
 </project>
