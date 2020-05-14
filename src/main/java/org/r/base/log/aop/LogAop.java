@@ -7,6 +7,7 @@ import org.aspectj.lang.annotation.Pointcut;
 import org.r.base.log.annotation.SysLog;
 import org.r.base.log.builder.InfoProviderBuilder;
 import org.r.base.log.builder.LogMsgBuilder;
+import org.r.base.log.factory.LogRecordFactory;
 import org.r.base.log.provider.MetaDataProvider;
 import org.r.base.log.thread.LogTask;
 import org.r.base.log.thread.LogTaskPool;
@@ -27,12 +28,19 @@ public class LogAop {
     private final TaskDelegate delegate;
     private final MetaDataProvider metaDataProvider;
     private final LogMsgBuilder logMsgBuilder;
+    private final LogRecordFactory logRecordFactory;
 
-    public LogAop(LogTaskPool pool, TaskDelegate delegate, MetaDataProvider metaDataProvider,LogMsgBuilder logMsgBuilder) {
+    public LogAop(
+            LogTaskPool pool,
+            TaskDelegate delegate,
+            MetaDataProvider metaDataProvider,
+            LogMsgBuilder logMsgBuilder,
+            LogRecordFactory logRecordFactory) {
         this.pool = pool;
         this.delegate = delegate;
         this.metaDataProvider = metaDataProvider;
         this.logMsgBuilder = logMsgBuilder;
+        this.logRecordFactory = logRecordFactory;
     }
 
     @Pointcut(value = "@annotation(log)", argNames = "log")

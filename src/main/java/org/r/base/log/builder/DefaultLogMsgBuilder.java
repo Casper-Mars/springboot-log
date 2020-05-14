@@ -1,6 +1,7 @@
 package org.r.base.log.builder;
 
 import com.alibaba.fastjson.JSONObject;
+import org.r.base.log.adatper.LogValueAdapterChain;
 import org.r.base.log.annotation.SysLog;
 import org.r.base.log.util.ReflectUtil;
 import org.r.base.log.wrapper.TaskWrapper;
@@ -19,6 +20,12 @@ import java.util.regex.Pattern;
  **/
 public class DefaultLogMsgBuilder implements LogMsgBuilder {
     private final Logger log = LoggerFactory.getLogger(DefaultLogMsgBuilder.class);
+
+    private final LogValueAdapterChain logValueAdapterChain;
+
+    public DefaultLogMsgBuilder(LogValueAdapterChain logValueAdapterChain) {
+        this.logValueAdapterChain = logValueAdapterChain;
+    }
 
     /**
      * 构建日志消息
@@ -40,7 +47,7 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
         Object[] paramters = task.getParamters();
         Map<String, String> valueIndex = valueArray(paramters, placeHolders);
         for (String placeHolder : placeHolders) {
-            msg = msg.replace(placeHolder, decodeValue(task,placeHolder,valueIndex.get(placeHolder)));
+            msg = msg.replace(placeHolder, decodeValue(task, placeHolder, valueIndex.get(placeHolder)));
         }
         return msg;
     }
@@ -52,8 +59,15 @@ public class DefaultLogMsgBuilder implements LogMsgBuilder {
      * @param value 数据
      * @return
      */
-    protected String decodeValue(TaskWrapper task,String placeHolder, String value) {
-        return value;
+    private String decodeValue(TaskWrapper task, String placeHolder, String value) {
+        String result = null;
+        if (logValueAdapterChain != null) {
+            result = logValueAdapterChain.doChain(task, placeHolder, value);
+        }
+        if (result == null) {
+            return value;
+        }
+        return result;
     }
 
 
