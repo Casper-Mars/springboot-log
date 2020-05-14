@@ -1,4 +1,4 @@
-package org.r.base.log.factory;
+package org.r.base.log.handler;
 
 import org.r.base.log.wrapper.TaskWrapper;
 
@@ -7,7 +7,7 @@ import org.r.base.log.wrapper.TaskWrapper;
  *
  * @author casper
  */
-public interface LogRecordFactory {
+public interface LogRecordHandler {
 
 
     /**
@@ -23,7 +23,7 @@ public interface LogRecordFactory {
      * @param parameters 接口的参数
      * @return
      */
-    Object getModifyData(Object... parameters);
+    Object getModifyData(String method,Object... parameters);
 
 
     /**
