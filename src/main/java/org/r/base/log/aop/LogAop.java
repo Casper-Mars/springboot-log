@@ -12,7 +12,6 @@ import org.r.base.log.provider.MetaDataProvider;
 import org.r.base.log.thread.LogTask;
 import org.r.base.log.thread.LogTaskPool;
 import org.r.base.log.thread.TaskDelegate;
-import org.r.base.log.util.ReflectUtil;
 import org.r.base.log.wrapper.DefaultTaskWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,16 +59,12 @@ public class LogAop {
         /*判断获取操作前后的数据*/
         Object beforeInvoke = null;
         Object afterInvoke = null;
-        Object key = null;
-        if (args != null && args.length > 0) {
-            key = getKey(log.keyName(), args[0]);
-        }
-        beforeInvoke = invoke(targetClass,targetMethodName, key);
+        beforeInvoke = invoke(targetClass,targetMethodName, args);
         /*处理业务*/
         Object proceed = null;
         proceed = point.proceed();
         /*获取操作后的数据*/
-        afterInvoke = invoke(targetClass,targetMethodName, key);
+        afterInvoke = invoke(targetClass,targetMethodName, args);
         DefaultTaskWrapper wrapper = new DefaultTaskWrapper(
                 log,
                 targetClass,
@@ -84,12 +79,6 @@ public class LogAop {
         pool.execute(task);
         return proceed;
     }
-
-
-    private Object getKey(String keyName, Object arg) {
-        return ReflectUtil.getInstance().getAttrValue(arg, keyName);
-    }
-
 
     private Object invoke(Class<?> targetClass,String method, Object... args) {
         Object result = null;

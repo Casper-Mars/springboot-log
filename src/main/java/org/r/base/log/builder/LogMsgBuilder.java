@@ -3,6 +3,7 @@ package org.r.base.log.builder;
 import com.alibaba.fastjson.JSONObject;
 import org.r.base.log.annotation.SysLog;
 import org.r.base.log.handler.LogRecordHandler;
+import org.r.base.log.util.ReflectUtil;
 import org.r.base.log.wrapper.TaskWrapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -126,7 +127,11 @@ public final class LogMsgBuilder {
      * @return
      */
     protected Object buildValue(Object target, String attrName) {
-        return recordHandler.getValueFromParameter(target, attrName);
+        Object value = recordHandler.getValueFromParameter(target, attrName);
+        if (value == null) {
+            value = ReflectUtil.getInstance().getAttrValue(target, attrName);
+        }
+        return value;
     }
 
     /**
