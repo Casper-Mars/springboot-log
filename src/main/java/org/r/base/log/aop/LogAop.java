@@ -59,33 +59,37 @@ public class LogAop {
         /*判断获取操作前后的数据*/
         Object beforeInvoke = null;
         Object afterInvoke = null;
-        beforeInvoke = invoke(targetClass,targetMethodName, args);
+        beforeInvoke = invoke(targetClass, targetMethodName, args);
         /*处理业务*/
         Object proceed = null;
         proceed = point.proceed();
         /*获取操作后的数据*/
-        afterInvoke = invoke(targetClass,targetMethodName, args);
-        DefaultTaskWrapper wrapper = new DefaultTaskWrapper(
-                log,
-                targetClass,
-                targetMethodName,
-                args,
-                proceed,
-                beforeInvoke,
-                afterInvoke,
-                metaDataProvider.getMetaData(),
-                new LogMsgBuilder(handlerFactory.getHandler(targetClass)));
-        LogTask task = new LogTask(wrapper, delegate);
-        pool.execute(task);
+        afterInvoke = invoke(targetClass, targetMethodName, args);
+        try {
+            DefaultTaskWrapper wrapper = new DefaultTaskWrapper(
+                    log,
+                    targetClass,
+                    targetMethodName,
+                    args,
+                    proceed,
+                    beforeInvoke,
+                    afterInvoke,
+                    metaDataProvider.getMetaData(),
+                    new LogMsgBuilder(handlerFactory.getHandler(targetClass)));
+            LogTask task = new LogTask(wrapper, delegate);
+            pool.execute(task);
+        } catch (Exception e) {
+            this.log.info("get exception");
+        }
         return proceed;
     }
 
-    private Object invoke(Class<?> targetClass,String method, Object... args) {
+    private Object invoke(Class<?> targetClass, String method, Object... args) {
         Object result = null;
         LogRecordHandler handler = handlerFactory.getHandler(targetClass);
         if (handler != null) {
             try {
-                result = handler.getModifyData(method,args);
+                result = handler.getModifyData(method, args);
             } catch (Exception e) {
                 log.error("can not get the modify data for class:" + targetClass.getName() + " with the error msg:" + e.getMessage());
             }

@@ -1,7 +1,6 @@
 package org.r.base.log.thread;
 
 import com.alibaba.fastjson.JSONObject;
-import org.r.base.log.annotation.SysLog;
 import org.r.base.log.wrapper.TaskWrapper;
 import org.springframework.stereotype.Component;
 
